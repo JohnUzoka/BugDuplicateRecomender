@@ -21,4 +21,3 @@ for t in tests:
     print("  Top-3:")
     for r in recs:
         print(f"    - #{r['issue_id']} ({r['similarity']:.3f}) {r['title']}")
-PY
