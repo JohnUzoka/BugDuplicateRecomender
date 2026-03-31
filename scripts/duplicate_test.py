@@ -1,20 +1,48 @@
+import csv
+import os
 from vector_model import VectorSpaceModel
-from dummy_data import (
-    get_dummy_bug_reports,
-    get_test_cases,
-    get_test_case_ground_truth,
-)
 
-reports = get_dummy_bug_reports()
-tests = get_test_cases()
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data")
 
-model = VectorSpaceModel(max_features=100)
+REPORTS_CSV = os.path.join(DATA_DIR, "godot_bug_reports.csv")
+DEFAULT_DUPLICATES_CSV = os.path.join(DATA_DIR, "godot_bug_reports_duplicates.csv")
+LEGACY_DUPLICATES_CSV = os.path.join(DATA_DIR, "duplicate_bug_reports.csv")
+
+
+def load_csv(path):
+    with open(path, newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+if os.path.exists(DEFAULT_DUPLICATES_CSV):
+    duplicates_csv = DEFAULT_DUPLICATES_CSV
+elif os.path.exists(LEGACY_DUPLICATES_CSV):
+    duplicates_csv = LEGACY_DUPLICATES_CSV
+else:
+    raise FileNotFoundError(
+        "No duplicates CSV found. Expected one of: "
+        f"{DEFAULT_DUPLICATES_CSV} or {LEGACY_DUPLICATES_CSV}"
+    )
+
+reports = load_csv(REPORTS_CSV)
+tests = load_csv(duplicates_csv)
+
+for r in reports:
+    r["id"] = int(r["id"])
+for t in tests:
+    t["id"] = int(t["id"])
+    t["ground_truth_id"] = int(t["ground_truth_id"])
+
+test_ground_truth = {t["id"]: t["ground_truth_id"] for t in tests}
+
+print(f"Loaded {len(reports)} original reports, {len(tests)} duplicate test cases\n")
+
+model = VectorSpaceModel(max_features=5000)
 model.build_model(reports, verbose=False)
 
 threshold = 0.20
-top_k = len(reports)
-
-test_ground_truth = get_test_case_ground_truth()
+top_k = 10
 
 top_scores_by_case = {}
 

@@ -11,7 +11,12 @@ import json, time, os
 _DBG_LOG = "/Users/lesliecoffie/school projects/BugDuplicateRecomender/.cursor/debug-8f82cd.log"
 def _dbg(msg, data=None, hyp=None):
     entry = {"sessionId":"8f82cd","timestamp":int(time.time()*1000),"location":"text_preprocessor.py","message":msg,"data":data or {},"hypothesisId":hyp or ""}
-    with open(_DBG_LOG, "a") as f: f.write(json.dumps(entry)+"\n")
+    try:
+        with open(_DBG_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+    except OSError:
+        # Debug logging should never break preprocessing.
+        pass
 # #endregion
 
 class TextPreprocessor:
