@@ -196,16 +196,15 @@ class VectorSpaceModel:
 
 # Test your vector model with dummy data
 if __name__ == "__main__":
-    from dummy_data import get_dummy_bug_reports, get_known_duplicates
+    from dummy_data import get_dummy_bug_reports
     
     print("=== Testing Vector Space Model ===\n")
     
     # Load dummy data
     bug_reports = get_dummy_bug_reports()
-    known_duplicates = get_known_duplicates()
     
     print(f"Loaded {len(bug_reports)} dummy bug reports")
-    print(f"Loaded {len(known_duplicates)} known duplicate relationships\n")
+    print()
     
     # Build model
     model = VectorSpaceModel(max_features=100)
@@ -227,15 +226,3 @@ if __name__ == "__main__":
     
     recommendations = model.find_similar(test_bug, top_k=3)
     
-    # Analyze duplicate detection
-    print("\n=== Analyzing Duplicate Detection ===")
-    # Create a test duplicate relationship
-    test_duplicates = [{'duplicate_id': 999, 'original_id': 1001}]
-    
-    analysis = model.analyze_duplicate_candidates(test_bug, test_duplicates, top_k=5)
-    print(f"New Bug: {analysis['new_bug_title']}")
-    print(f"Known duplicate of: {analysis['known_duplicates']}")
-    print(f"Found in recommendations: {analysis['found_in_recommendations']}")
-    print(f"MRR: {analysis['mrr']:.3f}")
-    print(f"Precision@1: {analysis['precision_at_k'][1]:.3f}")
-    print(f"Precision@5: {analysis['precision_at_k'][5]:.3f}")

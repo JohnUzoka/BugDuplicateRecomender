@@ -56,18 +56,6 @@ dummy_bug_reports = [
     }
 ]
 
-# Known duplicate relationships (for testing)
-# This simulates what human triagers have identified
-known_duplicates = [
-    {'duplicate_id': 1002, 'original_id': 1001},   # 1002 is duplicate of 1001
-    {'duplicate_id': 1004, 'original_id': 1001},   # 1004 is duplicate of 1001
-    {'duplicate_id': 1008, 'original_id': 1001},   # 1008 is duplicate of 1001
-    {'duplicate_id': 1006, 'original_id': 1001},   # 1006 is duplicate of 1001
-    {'duplicate_id': 1010, 'original_id': 1001},   # 1010 is duplicate of 1001
-    {'duplicate_id': 1005, 'original_id': 1003},   # 1005 is duplicate of 1003
-    {'duplicate_id': 1009, 'original_id': 1003},   # 1009 is duplicate of 1003
-]
-
 # Test cases (new bug reports that should be identified as duplicates)
 test_cases = [
     {
@@ -97,14 +85,24 @@ test_cases = [
     }
 ]
 
+# Ground-truth mapping for test cases.
+# expected_original_id = None means the case is not a duplicate.
+test_case_ground_truth = {
+    2001: 1001,
+    2002: 1003,
+    2003: None,
+    2004: 1003,
+    2005: 1001,
+}
+
 def get_dummy_bug_reports():
     """Return dummy bug reports for testing"""
     return dummy_bug_reports
 
-def get_known_duplicates():
-    """Return known duplicate relationships"""
-    return known_duplicates
-
 def get_test_cases():
     """Return test cases for evaluation"""
     return test_cases
+
+def get_test_case_ground_truth():
+    """Return expected original bug id for each test case id"""
+    return test_case_ground_truth
