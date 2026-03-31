@@ -28,7 +28,6 @@ else:
         f"{DEFAULT_DUPLICATES_CSV}, {LEGACY_DUPLICATES_CSV}, "
         f"or {OLDER_LEGACY_DUPLICATES_CSV}"
     )
-
 reports = load_csv(REPORTS_CSV)
 tests = load_csv(duplicates_csv)
 
