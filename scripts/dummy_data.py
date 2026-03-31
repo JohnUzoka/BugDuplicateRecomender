@@ -84,6 +84,16 @@ test_cases = [
         'id': 2003,
         'title': 'Completely new issue about shader compilation',
         'body': 'Shader compilation fails when using multiple lights in the scene.'
+    },
+    {
+        'id': 2004,
+        'title': 'Widget alignment broken in node editor',
+        'body': 'when using the horisonal contianer widgets are not snapping to the grid'
+    },
+    {
+        'id': 2005,
+        'title': 'crahses when opening pngs that are 4K',
+        'body': 'Loading 4k files causes the game to crash, i believe its a ram issue.'
     }
 ]
 
