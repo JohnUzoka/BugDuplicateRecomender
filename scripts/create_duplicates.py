@@ -6,7 +6,7 @@ from pathlib import Path
 RANDOM_SEED = 42
 NUM_REPORTS = 100
 SOURCE_CSV = Path(__file__).resolve().parents[1] / "data" / "godot_bug_reports.csv"
-OUTPUT_CSV = Path(__file__).resolve().parents[1] / "data" / "godot_bug_reports_duplicates.csv"
+OUTPUT_CSV = Path(__file__).resolve().parents[1] / "data" / "godot_duplicate_bug_reports.csv"
 
 
 def vary_text(text: str, variation_type: str) -> str:

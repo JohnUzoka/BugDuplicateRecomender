@@ -6,8 +6,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data")
 
 REPORTS_CSV = os.path.join(DATA_DIR, "godot_bug_reports.csv")
-DEFAULT_DUPLICATES_CSV = os.path.join(DATA_DIR, "godot_bug_reports_duplicates.csv")
-LEGACY_DUPLICATES_CSV = os.path.join(DATA_DIR, "duplicate_bug_reports.csv")
+DEFAULT_DUPLICATES_CSV = os.path.join(DATA_DIR, "godot_duplicate_bug_reports.csv")
+LEGACY_DUPLICATES_CSV = os.path.join(DATA_DIR, "godot_bug_reports_duplicates.csv")
+OLDER_LEGACY_DUPLICATES_CSV = os.path.join(DATA_DIR, "duplicate_bug_reports.csv")
 
 
 def load_csv(path):
@@ -19,10 +20,13 @@ if os.path.exists(DEFAULT_DUPLICATES_CSV):
     duplicates_csv = DEFAULT_DUPLICATES_CSV
 elif os.path.exists(LEGACY_DUPLICATES_CSV):
     duplicates_csv = LEGACY_DUPLICATES_CSV
+elif os.path.exists(OLDER_LEGACY_DUPLICATES_CSV):
+    duplicates_csv = OLDER_LEGACY_DUPLICATES_CSV
 else:
     raise FileNotFoundError(
         "No duplicates CSV found. Expected one of: "
-        f"{DEFAULT_DUPLICATES_CSV} or {LEGACY_DUPLICATES_CSV}"
+        f"{DEFAULT_DUPLICATES_CSV}, {LEGACY_DUPLICATES_CSV}, "
+        f"or {OLDER_LEGACY_DUPLICATES_CSV}"
     )
 
 reports = load_csv(REPORTS_CSV)
