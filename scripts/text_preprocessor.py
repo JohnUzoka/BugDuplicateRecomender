@@ -4,14 +4,32 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import re
 import string
+import ssl
+
+# #region agent log
+import json, time, os
+_DBG_LOG = "/Users/lesliecoffie/school projects/BugDuplicateRecomender/.cursor/debug-8f82cd.log"
+def _dbg(msg, data=None, hyp=None):
+    entry = {"sessionId":"8f82cd","timestamp":int(time.time()*1000),"location":"text_preprocessor.py","message":msg,"data":data or {},"hypothesisId":hyp or ""}
+    try:
+        with open(_DBG_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+    except OSError:
+        # Debug logging should never break preprocessing.
+        pass
+# #endregion
 
 class TextPreprocessor:
     def __init__(self):
+        # Bypass SSL verification for NLTK downloads (macOS Python cert issue)
+        _original_https_context = ssl._create_default_https_context
+        ssl._create_default_https_context = ssl._create_unverified_context
+
         # Download required NLTK data (run once)
         try:
-            nltk.data.find('tokenizers/punkt')
+            nltk.data.find('tokenizers/punkt_tab')
         except LookupError:
-            nltk.download('punkt')
+            nltk.download('punkt_tab')
         
         try:
             nltk.data.find('corpora/stopwords')
@@ -22,13 +40,33 @@ class TextPreprocessor:
             nltk.data.find('corpora/wordnet')
         except LookupError:
             nltk.download('wordnet')
+
+        ssl._create_default_https_context = _original_https_context
         
+        # #region agent log
+        _dbg("NLTK downloads complete, checking resources", {
+            "punkt_tab": self._resource_exists('tokenizers/punkt_tab'),
+            "stopwords": self._resource_exists('corpora/stopwords'),
+            "wordnet": self._resource_exists('corpora/wordnet'),
+        }, "verify")
+        # #endregion
+
         self.stop_words = set(stopwords.words('english'))
         self.lemmatizer = WordNetLemmatizer()
         
         # Add custom stop words specific to bug reports
         self.custom_stops = {'bug', 'issue', 'error', 'problem', 'fix', 'please', 'thanks'}
         self.stop_words.update(self.custom_stops)
+
+    # #region agent log
+    @staticmethod
+    def _resource_exists(path):
+        try:
+            nltk.data.find(path)
+            return True
+        except LookupError:
+            return False
+    # #endregion
     
     def preprocess(self, text, verbose=False):
         """
