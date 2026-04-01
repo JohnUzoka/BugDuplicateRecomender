@@ -80,7 +80,7 @@ def plot_correct_original_found(model, top_k=10):
 
 
 def plot_average_similarity(model):
-    k_values = [3, 5, 10]
+    k_values = [1, 3, 5, 10]
     avg_scores = []
 
     print("\nAverage Similarity by Top-K")
