@@ -23,6 +23,25 @@ def evaluate_correct_original_found(model, top_k=10):
     return found, not_found, total
 
 
+def evaluate_top_1_correct(model):
+    correct_top_1 = 0
+    incorrect_top_1 = 0
+
+    for test_case in tests:
+        case_id = test_case["id"]
+        correct_id = test_ground_truth[case_id]
+
+        recs = model.find_similar(test_case, top_k=1, verbose=False)
+
+        if recs and recs[0]["issue_id"] == correct_id:
+            correct_top_1 += 1
+        else:
+            incorrect_top_1 += 1
+
+    total = correct_top_1 + incorrect_top_1
+    return correct_top_1, incorrect_top_1, total
+
+
 def average_similarity_for_k(model, k):
     per_case_averages = []
 
@@ -73,10 +92,47 @@ def plot_correct_original_found(model, top_k=10):
 
     plt.grid(axis="y")
     plt.tight_layout()
-    plt.savefig("found_rate.png")
+    plt.savefig("found_rate_top_10.png")
     plt.show()
 
-    print("Saved graph to found_rate.png")
+    print("Saved graph to found_rate_top_10.png")
+
+
+def plot_top_1_correct(model):
+    correct_top_1, incorrect_top_1, total = evaluate_top_1_correct(model)
+
+    labels = ["Top 1 Correct", "Top 1 Incorrect"]
+    values = [correct_top_1, incorrect_top_1]
+    percentages = [(v / total) * 100 if total else 0 for v in values]
+
+    print("\nTop 1 Correct Summary")
+    print("=" * 40)
+    print(f"Total test cases: {total}")
+    print(f"Top result correct: {correct_top_1}")
+    print(f"Top result incorrect: {incorrect_top_1}")
+    print(f"Top-1 accuracy: {correct_top_1 / total:.3f}" if total else "Top-1 accuracy: 0.000")
+
+    plt.figure(figsize=(9, 5))
+    bars = plt.bar(labels, values)
+
+    plt.xlabel("Top Result Accuracy")
+    plt.ylabel("Number of Duplicate Reports")
+    plt.title("Correct Original as the Top 1 Result")
+
+    for i, bar in enumerate(bars):
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.5,
+            f"{values[i]} ({percentages[i]:.1f}%)",
+            ha="center"
+        )
+
+    plt.grid(axis="y")
+    plt.tight_layout()
+    plt.savefig("top_1_correct.png")
+    plt.show()
+
+    print("Saved graph to top_1_correct.png")
 
 
 def plot_average_similarity(model):
@@ -120,6 +176,7 @@ def main():
     model.build_model(reports, verbose=False)
 
     plot_correct_original_found(model, top_k=10)
+    plot_top_1_correct(model)
     plot_average_similarity(model)
 
 
